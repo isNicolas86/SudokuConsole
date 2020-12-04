@@ -39,6 +39,7 @@ public class SudokuSolver {
                 for (int j = 0; j < dim; j++) {
                     if (cellData[i][j].getProbNums().size() == 1 && initTable[i][j] == 0) {
                         initTable[i][j] = cellData[i][j].getProbNums().get(0);
+
                         stillSolving = true;
                     }
                 }
@@ -58,7 +59,7 @@ public class SudokuSolver {
     private void removeNumFromColumn(int num, int i, int j){
         for (int ii = 0; ii < dim; ii++) {
             if (ii!=i){
-                cellData[ii][j].cancelCase(num);
+               cellData[ii][j].cancelCase(num);
             }
         }
     }
@@ -66,8 +67,9 @@ public class SudokuSolver {
     private void removeNumFromSubmatrix(int num, int i, int j){
         for (int ii = 3 * (i / 3); ii < 3 * (i / 3) + 3; ii++) {
             for (int jj = 3 * (j / 3); jj < 3 * (j / 3) + 3; jj++) {
-                if (ii==i && jj==j) continue;
-                cellData[ii][jj].cancelCase(num);
+                if (ii==i && jj==j) {
+                    continue;
+                }else cellData[ii][jj].cancelCase(num);
             }
         }
     }

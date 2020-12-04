@@ -23,7 +23,9 @@ public class CellData {
 
     //Sending request to eliminate a number in the cell
     public void cancelCase(int numToCancel){
-        this.probNums.remove(numToCancel);
+        if (probNums.indexOf(numToCancel)>=0) {
+            probNums.remove(probNums.indexOf(numToCancel));
+        }
     }
 
     public ArrayList<Integer> getProbNums() {
