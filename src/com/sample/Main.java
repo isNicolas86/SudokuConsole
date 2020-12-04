@@ -11,7 +11,10 @@ public class Main {
                 {0,0,0,0,3,0,7,0,1}};
 
         SudokuSolver sudokuSolver = new SudokuSolver();
-        table=sudokuSolver.sudo_Solve(table);
+        table=sudokuSolver.sudoSolve(table);
+        table=sudokuSolver.sudoSolve_Level2(table);
+        table=sudokuSolver.sudoSolve(table);
+        table=sudokuSolver.sudoSolve_Level2(table);
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -19,6 +22,13 @@ public class Main {
             }
             System.out.println("");
         }
+
+//        ArrayList<Integer> test = new ArrayList<>();
+//        test.add(2);
+//        test.add(5);
+//        test.add(7);
+//        int num =7;
+//        System.out.println(test.contains(num));
 
     }
 }

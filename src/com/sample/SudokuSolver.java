@@ -12,7 +12,7 @@ public class SudokuSolver {
     }
 
     //Sudoku solver level 1
-    public int[][] sudo_Solve(int[][] initTable){
+    public int[][] sudoSolve(int[][] initTable){
         //Intializing the cellData 2 dim matrix elements with propre possibilities
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
@@ -35,12 +35,63 @@ public class SudokuSolver {
                     }
                 }
             }
+            //Assigning number to a cell when only one probability is left
             for (int i = 0; i < dim; i++) {
                 for (int j = 0; j < dim; j++) {
                     if (cellData[i][j].getProbNums().size() == 1 && initTable[i][j] == 0) {
                         initTable[i][j] = cellData[i][j].getProbNums().get(0);
-
                         stillSolving = true;
+                    }
+                }
+            }
+        }
+        return initTable;
+    }
+
+    //Sudoku Solver level 2
+    public int[][] sudoSolve_Level2(int[][] initTable){
+        int count, countInLine, countInColumn;
+        for (int i = 0; i < dim; i++) {
+            proceed:
+            for (int j = 0; j < dim; j++) {
+                if (initTable[i][j]==0){
+                    for (int num :
+                            cellData[i][j].getProbNums()) {
+                        count =0;
+                        for (int ii = 3 * (i / 3); ii < 3 * (i / 3) + 3; ii++) {
+                            for (int jj = 3 * (j / 3); jj < 3 * (j / 3) + 3; jj++){
+                                if (cellData[ii][jj].getProbNums().contains(num)){
+                                    count++;
+                                }
+                            }
+                        }
+                        if(count==1){
+                            initTable[i][j]=num;
+                            this.cellData[i][j] = new CellData(num);
+                            continue proceed;
+                        }
+                        countInColumn=0;
+                        for (int jj=0; jj<dim; jj++){
+                            if (cellData[i][jj].getProbNums().contains(num)){
+                                countInColumn++;
+                            }
+                        }
+                        if(countInColumn==1){
+                            initTable[i][j]=num;
+                            this.cellData[i][j] = new CellData(num);
+                            continue proceed;
+                        }
+                        countInLine=0;
+                        for(int ii=0; ii<dim;ii++){
+                            if (cellData[ii][j].getProbNums().contains(num)){
+                                countInLine++;
+                            }
+                        }
+                        if (countInLine==1){
+                            initTable[i][j]=num;
+                            this.cellData[i][j] = new CellData(num);
+                            continue proceed;
+                        }
                     }
                 }
             }
@@ -73,5 +124,7 @@ public class SudokuSolver {
             }
         }
     }
+
+
 
 }
