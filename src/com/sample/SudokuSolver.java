@@ -141,21 +141,17 @@ public class SudokuSolver {
                     }
                 }
             }
-            //Scanning all 4 combinations of cells inside each 3x3 matrix
+            //Scanning all 4 combinations of cells inside each 3x3 matrix searching for 4 probabilities in 4 cells
             for (int h = 0; h < 3; h++) {
                 for (int v = 0; v < 3; v++) {
-                    a:
                     for (int x = 3 * h; x < 3 * h + 3; x++) {
                         for (int y = 3 * v; y < 3 * v + 3; y++) {
-                            b:
                             for (int xx = 3 * h; xx < 3 * h + 3; xx++) {
                                 bypassXY:
                                 for (int yy = 3 * v; yy < 3 * v + 3; yy++) {
-                                    c:
                                     for (int xxx = 3 * h; xxx < 3 * h + 3; xxx++) {
                                         bypassXXYY:
                                         for (int yyy = 3 * v; yyy < 3 * v + 3; yyy++) {
-                                            d:
                                             for (int xxxx = 3 * h; xxxx < 3 * h + 3; xxxx++) {
                                                 bypassXXXYYY:
                                                 for (int yyyy = 3 * v; yyyy < 3 * v + 3; yyyy++) {
@@ -164,12 +160,8 @@ public class SudokuSolver {
                                                     if (yyyy <= yyy && xxxx == xxx || xxxx < xxx) continue bypassXXXYYY;
                                                     // Write here
                                                     if (linkedProbaSubMat(x, y, xx, yy, xxx, yyy, xxxx, yyyy).size() == 12) {
-                                                        cancelOutLocatedNum(linkedProbaSubMat(x, y, xx, yy, xxx, yyy, xxxx, yyyy));
+                                                        cancelOutLocatedNumSubMat4(linkedProbaSubMat(x, y, xx, yy, xxx, yyy, xxxx, yyyy));
                                                     }
-                                                    if (xxxx == 3 * h + 3 - 1 && yyyy == 3 * v + 2) break d;
-                                                    if (xxx == 3 * h + 3 - 1 && yyy == 3 * v + 1) break c;
-                                                    if (xx == (3 * h + 3) - 1) break b;
-                                                    if (x == 3 * h + 3 - 1 && y == 3 * v) break a;
                                                 }
                                             }
                                         }
@@ -180,6 +172,33 @@ public class SudokuSolver {
                     }
                 }
             }
+
+            //Scanning all 3 combinations of cells inside each 3x3 matrix searching for 3 probabilities in 4 cells
+            for (int h = 0; h < 3; h++) {
+                for (int v = 0; v < 3; v++) {
+                    for (int x = 3 * h; x < 3 * h + 3; x++) {
+                        for (int y = 3 * v; y < 3 * v + 3; y++) {
+                            for (int xx = 3 * h; xx < 3 * h + 3; xx++) {
+                                bypassXY:
+                                for (int yy = 3 * v; yy < 3 * v + 3; yy++) {
+                                    for (int xxx = 3 * h; xxx < 3 * h + 3; xxx++) {
+                                        bypassXXYY:
+                                        for (int yyy = 3 * v; yyy < 3 * v + 3; yyy++) {
+                                            if (yy <= y && xx == x || xx < x) continue bypassXY;
+                                            if (yyy <= yy && xxx == xx || xxx < xx) continue bypassXXYY;
+                                            // Write here
+                                            if (linkedProbaSubMat(x, y, xx, yy, xxx, yyy).size() == 9) {
+                                                cancelOutLocatedNumSubMat3(linkedProbaSubMat(x, y, xx, yy, xxx, yyy));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             for (int i = 0; i < dim; i++) {
                 for (int j = 0; j < dim; j++) {
                     if (cellData[i][j].getProbNums().size() == 1 && initTable[i][j] == 0) {
@@ -206,6 +225,7 @@ public class SudokuSolver {
         return c;
     }
 
+    //LinkedProbaSubmat for 4 combinations
     private ArrayList<Integer> linkedProbaSubMat(int x, int y, int xx, int yy, int xxx, int yyy, int xxxx, int yyyy){
         ArrayList<Integer> localLinkedProba = new ArrayList<>();
         for (int num :
@@ -222,6 +242,45 @@ public class SudokuSolver {
         }
         for (int num :
                 cellData[xxxx][yyyy].getProbNums()) {
+            localLinkedProba.add(num);
+        }
+        //Removing repetitive numbers
+        boolean removing=true;
+        while (removing) {
+            removing = false;
+            for (int h1 = 0; h1 < localLinkedProba.size() - 1; h1++) {
+                for (int h2 = h1 + 1; h2 < localLinkedProba.size(); h2++) {
+                    if (localLinkedProba.get(h2) == localLinkedProba.get(h1)) {
+                        localLinkedProba.remove(h2);
+                        removing = true;
+                    }
+                }
+            }
+        }
+        localLinkedProba.add(x);
+        localLinkedProba.add(y);
+        localLinkedProba.add(xx);
+        localLinkedProba.add(yy);
+        localLinkedProba.add(xxx);
+        localLinkedProba.add(yyy);
+        localLinkedProba.add(xxxx);
+        localLinkedProba.add(yyyy);
+        return localLinkedProba;
+    }
+
+    //LinkedProbaSubmat for 3 combinations
+    private ArrayList<Integer> linkedProbaSubMat(int x, int y, int xx, int yy, int xxx, int yyy){
+        ArrayList<Integer> localLinkedProba = new ArrayList<>();
+        for (int num :
+                cellData[x][y].getProbNums()) {
+            localLinkedProba.add(num);
+        }
+        for (int num :
+                cellData[xx][yy].getProbNums()) {
+            localLinkedProba.add(num);
+        }
+        for (int num :
+                cellData[xxx][yyy].getProbNums()) {
             localLinkedProba.add(num);
         }
         //Removing repetetive numbers
@@ -243,8 +302,6 @@ public class SudokuSolver {
         localLinkedProba.add(yy);
         localLinkedProba.add(xxx);
         localLinkedProba.add(yyy);
-        localLinkedProba.add(xxxx);
-        localLinkedProba.add(yyyy);
         return localLinkedProba;
     }
 
@@ -423,7 +480,7 @@ public class SudokuSolver {
         }
     }
 
-    private void cancelOutLocatedNum(ArrayList<Integer> arrayList){
+    private void cancelOutLocatedNumSubMat4(ArrayList<Integer> arrayList){
         for (int i = 3*(arrayList.get(4)/3); i < 3 * (arrayList.get(4) / 3) + 3; i++) {
             for (int j = 3*(arrayList.get(5)/3); j < 3 * (arrayList.get(5)/3) + 3; j++) {
                 if (i==arrayList.get(4)&& j==arrayList.get(5) || i ==arrayList.get(6) && j==arrayList.get(7)
@@ -439,7 +496,21 @@ public class SudokuSolver {
         }
     }
 
-    //private void
+    private void cancelOutLocatedNumSubMat3(ArrayList<Integer> arrayList){
+        for (int i = 3*(arrayList.get(3)/3); i < 3 * (arrayList.get(3) / 3) + 3; i++) {
+            for (int j = 3*(arrayList.get(4)/3); j < 3 * (arrayList.get(4)/3) + 3; j++) {
+                if (i==arrayList.get(3)&& j==arrayList.get(4) || i ==arrayList.get(5) && j==arrayList.get(6)
+                        || i==arrayList.get(7) && j==arrayList.get(8)){
+                    continue;
+                } else{
+                    cellData[i][j].cancelCase(arrayList.get(0));
+                    cellData[i][j].cancelCase(arrayList.get(1));
+                    cellData[i][j].cancelCase(arrayList.get(2));
+                }
+            }
+        }
+    }
+
     private void removeNumFromLine(int num, int i,int j){
         for (int jj = 0; jj < dim; jj++) {
             if (jj!=j){
